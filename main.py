@@ -32,6 +32,13 @@ def dropSnow():
         beginSnow()
 
 
+def getStars():
+    stars = []
+    for x in range(starQuan):
+        stars.append((random.randint(0, starEnd-1), random.randint(0, maxX-1)))
+    return stars
+
+
 def fallDown():
     global maxHeigh
 
@@ -84,38 +91,68 @@ if "__main__" == __name__:
 
         waitTime = random.randint(50, 100) / 100  # waittime between 0,5s - 1s
         snowFRnd = random.randint(0, 10)  # snowFlake type
-        if snowFRnd == 0:
+        emptyRnd = random.randint(0, 25)  # empty type
+        starRnd = random.randint(0, 35)  # star type
+        if starRnd == 0 and snowFRnd != 0:
+            star = " "
+        elif starRnd == 1:
+            star = "O"
+        elif starRnd == 2:
+            star = "'"
+        elif starRnd == 3:
+            star = '"'
+        elif starRnd == 4:
+            star = "~"
+        elif starRnd == 5 and emptyRnd != 2:
+            star = "."
+        elif starRnd == 6:
+            star = ","
+        else:
+            star = "*"
+        if snowFRnd == 0 and star != "*":
             snowFlake = "*"
         else:
             snowFlake = "X"
-        emptyRnd = random.randint(0, 25)  # empty type
-        if snowFRnd == 0 and snowFRnd != 0:
+        if emptyRnd == 0 and snowFRnd != 0 and star != "*":
             empty = "*"
-        elif snowFRnd == 1:
+        elif emptyRnd == 1:
             empty = "-"
-        elif snowFRnd == 2:
+        elif emptyRnd == 2:
             empty = "."
-        elif snowFRnd == 3:
+        elif emptyRnd == 3:
             empty = ":"
-        elif snowFRnd == 4:
+        elif emptyRnd == 4:
             empty = "|"
         else:
             empty = " "
 
+        starEnd = random.randint(round(maxY / 7), round(maxY / 2))
+        val1 = round((maxX * maxY) / 2500)
+        val2 = round(maxX * maxY * starEnd / 20000)
+        while val2 < val1:
+            val2 += 2
+        starQuan = random.randint(val1, val2)
+
         startFlakeRnd = (round((math.pow(waitTime, -1)) * 4), round((maxX / 11) * waitTime))
 
-        lp = printer.LinePrinter(empty=empty, full=snowFlake)
+        lp = printer.LinePrinter(empty=empty, full=snowFlake, star=star)
         lp.fillLC()
+        lp.stars = getStars()
 
         maxHeigh = lp.maxY
 
         running = True
         beginSnow()
         while running:
-            lp.printLC()
+            lp.printLC(lp.lineConts.copy())
             dropSnow()
-
-            if lp.lineConts[resetByLine] == lp.fullLC[1]:
+            
+            i = 0
+            for index in lp.lineConts[resetByLine]:
+                if index == snowFlake:
+                    i += 1
+            
+            if i/maxX > 0.6:
                 running = False
 
             time.sleep(waitTime)

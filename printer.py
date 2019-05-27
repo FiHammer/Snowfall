@@ -1,8 +1,11 @@
 import os
-
+import copy
 
 class LinePrinter:
-    def __init__(self, maxX=236, maxY=63, empty=" ", full = "X"):
+    def __init__(self, maxX=236, maxY=63, empty=" ", full="X", star="*", stars=None):
+        if stars is None:
+            stars = []
+        self.stars = stars
         self.maxX = maxX
         self.maxY = maxY
 
@@ -11,6 +14,8 @@ class LinePrinter:
         self.lineConts = []
         self.emptyLC = []
         self.fullLC = []
+        self.stars = []
+        self.star = star
 
     def fillLC(self):
         # Filling the line Conts
@@ -29,11 +34,14 @@ class LinePrinter:
             for indexNum in range(self.maxX):
                 self.fullLC[lineNum].append(self.fullCont)
 
-
-    def printLC(self):
+    def printLC(self, lc):
         # PRINT IT
+        lc = copy.deepcopy(self.lineConts)
+        for star in self.stars:
+            lc[star[0]][star[1]] = self.star
+
         os.system("cls")
-        for line in self.lineConts:
+        for line in lc:
             fullLine = ""
             for index in line:
                 fullLine += index
