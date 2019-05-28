@@ -38,7 +38,8 @@ class LinePrinter:
         # PRINT IT
         lc = copy.deepcopy(self.lineConts)
         for star in self.stars:
-            lc[star[0]][star[1]] = self.star
+            if lc[star[0]][star[1]] == self.allCont:
+                lc[star[0]][star[1]] = self.star
 
         os.system("cls")
         for line in lc:
